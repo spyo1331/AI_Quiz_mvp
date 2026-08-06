@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" charset="UTF-8">
+    <title>Результат</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background:
+                radial-gradient(ellipse 80% 50% at 20% 10%, rgba(153, 27, 27, 0.5) 0%, transparent 60%),
+                radial-gradient(ellipse 60% 40% at 80% 20%, rgba(185, 28, 28, 0.4) 0%, transparent 50%),
+                radial-gradient(ellipse 70% 60% at 50% 0%, rgba(220, 38, 38, 0.35) 0%, transparent 55%),
+                radial-gradient(ellipse 80% 50% at 15% 90%, rgba(127, 29, 29, 0.45) 0%, transparent 60%),
+                radial-gradient(ellipse 60% 40% at 85% 85%, rgba(185, 28, 28, 0.35) 0%, transparent 50%),
+                linear-gradient(180deg, #0A0A0A 0%, #111111 15%, #1A0A0A 30%, #1C0C0C 50%, #140808 70%, #0D0404 85%, #050000 100%);
+            background-attachment: fixed;
+            color: #F5F5F5;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                radial-gradient(circle at 20% 30%, rgba(220, 38, 38, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 80% 70%, rgba(185, 28, 28, 0.12) 0%, transparent 40%),
+                radial-gradient(circle at 50% 50%, rgba(153, 27, 27, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 80%, rgba(220, 38, 38, 0.08) 0%, transparent 45%),
+                radial-gradient(circle at 70% 20%, rgba(239, 68, 68, 0.1) 0%, transparent 40%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 60px 20px;
+        }
+
+        .type {
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            font-weight: 800;
+            text-align: center;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            background: linear-gradient(135deg, #F87171 0%, #EF4444 30%, #DC2626 60%, #991B1B 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-family: 'Courier New', monospace;
+            text-shadow: 0 0 40px rgba(220, 38, 38, 0.3);
+        }
+
+        .type-label {
+            text-align: center;
+            font-size: clamp(0.8rem, 2vw, 1rem);
+            color: rgba(248, 113, 113, 0.7);
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            margin-bottom: 60px;
+        }
+
+        /* ===== ШАХМАТНЫЙ ПОРЯДОК ===== */
+
+        .function-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            align-items: center;
+            margin-bottom: 50px;
+        }
+
+        @media (max-width: 768px) {
+            .function-row {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .function-row.reverse-mobile {
+                direction: rtl;
+            }
+
+            .function-row.reverse-mobile > * {
+                direction: ltr;
+            }
+        }
+
+        /* Бокс с описанием функции */
+        .function-box {
+            background: rgba(20, 10, 10, 0.6);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(220, 38, 38, 0.15);
+            border-radius: 24px;
+            padding: 35px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s ease;
+        }
+
+        .function-box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(220, 38, 38, 0.5), transparent);
+        }
+
+        .function-box:hover {
+            border-color: rgba(220, 38, 38, 0.35);
+            box-shadow: 0 20px 60px rgba(220, 38, 38, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .function-box table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .function-box td {
+            padding: 0;
+            text-align: center;
+            font-size: clamp(0.9rem, 1.5vw, 1.05rem);
+            line-height: 1.8;
+            color: rgba(255, 255, 255, 0.85);
+            font-weight: 300;
+        }
+
+        /* Описание термина (без бокса) */
+        .term-info {
+            padding: 20px;
+        }
+
+        .term-info h3 {
+            font-size: clamp(1.1rem, 2vw, 1.4rem);
+            color: #F87171;
+            margin-bottom: 15px;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .term-info h3 .number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, #DC2626, #991B1B);
+            border-radius: 10px;
+            font-size: 0.9rem;
+            color: white;
+            font-weight: 700;
+            box-shadow: 0 0 20px rgba(220, 38, 38, 0.5), 0 0 40px rgba(220, 38, 38, 0.2);
+        }
+
+        .term-info p {
+            color: rgba(255, 255, 255, 0.7);
+            line-height: 1.7;
+            font-size: clamp(0.85rem, 1.5vw, 1rem);
+        }
+
+        .term-info .function-name {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 6px 16px;
+            background: rgba(220, 38, 38, 0.12);
+            border: 1px solid rgba(220, 38, 38, 0.3);
+            border-radius: 20px;
+            font-size: 0.85rem;
+            color: #F87171;
+            letter-spacing: 0.05em;
+        }
+
+        /* Чётные строки — меняем порядок местами */
+        .function-row:nth-child(even) {
+            direction: rtl;
+        }
+
+        .function-row:nth-child(even) > * {
+            direction: ltr;
+        }
+
+        /* Анимация появления */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .function-row {
+            animation: fadeInUp 0.6s ease forwards;
+        }
+
+        .function-row:nth-child(1) { animation-delay: 0.1s; }
+        .function-row:nth-child(2) { animation-delay: 0.2s; }
+        .function-row:nth-child(3) { animation-delay: 0.3s; }
+        .function-row:nth-child(4) { animation-delay: 0.4s; }
+        .function-row:nth-child(5) { animation-delay: 0.5s; }
+        .function-row:nth-child(6) { animation-delay: 0.6s; }
+        .function-row:nth-child(7) { animation-delay: 0.7s; }
+        .function-row:nth-child(8) { animation-delay: 0.8s; }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="type">{{type}}</div>
+        <div class="type-label">Ваш соционический тип</div>
+
+        <!-- 1. Базовая функция — бокс СЛЕВА, термин СПРАВА -->
+        <div class="function-row">
+            <div class="function-box">
+                <table>
+                    <tr>
+                        <td>
+                            {{first_fn_desc}}
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div class="term-info">
+                <h3><span class="number">I</span> Базовая функция</h3>
+                <p>
+                    Главная сила личности. Функция, которая работает автоматически,
+                    не требует усилий и приносит удовольствие. Человек постоянно использует её,
+                    даже не замечая этого. От базовой функции зависит вся психика.
+                </p>
+                <span class="function-name">{{first_fn_name}}</span>
+            </div>
+        </div>
+
+        <!-- 2. Творческая функция — бокс СПРАВА, термин СЛЕВА -->
+        <div class="function-row">
+            <div class="function-box">
+                <table>
+                    <tr>
+                        <td>
+                            {{second_fn_desc}}
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div class="term-info">
+                <h3><span class="number">II</span> Творческая функция</h3>
+                <p>
+                    Так же сильная осознанная функция, но более гибкая, чем базовая. Неудача не огорчает, а только вызывает желание найти подходящий вариант. Используется творческая легко, по ней человек быстро учится на ошибках, охотно обсуждает,  критикует  и усваивает информацию.
+                </p>
+                <span class="function-name">{{second_fn_name}}</span>
+            </div>
+        </div>
+
+        <!-- 3. Ролевая функция — бокс СЛЕВА, термин СПРАВА -->
+        <div class="function-row">
+            <div class="function-box">
+                <table>
+                    <tr>
+                        <td>
+                            {{third_fn_desc}}
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div class="term-info">
+                <h3><span class="number">III</span> Ролевая функция</h3>
+                <p>
+                    Функция «маски» — как человек ведёт себя в обществе, особенно с незнакомцами.
+                    Работает сознательно, через усилие. Человек старается соответствовать ожиданиям,
+                    но быстро устаёт от этой роли.
+                </p>
+                <span class="function-name">{{third_fn_name}}</span>
+            </div>
+        </div>
+
+        <!-- 4. Болевая функция — бокс СПРАВА, термин СЛЕВА -->
+        <div class="function-row">
+            <div class="function-box">
+                <table>
+                    <tr>
+                        <td>
+                            {{fourth_fn_desc}}
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div class="term-info">
+                <h3><span class="number">IV</span> Болевая функция</h3>
+                <p>
+                    Самая слабая функция — зона неуверенности и стресса.
+                    Человек избегает ситуаций, где она нужна, и чувствует себя беспомощным,
+                    когда вынужден её использовать. Критика по болевой функции ранит глубоко.
+                </p>
+                <span class="function-name">{{fourth_fn_name}}</span>
+            </div>
+        </div>
+
+        <!-- 5. Подсознательная функция — бокс СЛЕВА, термин СПРАВА -->
+        <div class="function-row">
+            <div class="function-box">
+                <table>
+                    <tr>
+                        <td>
+                            {{fifth_fn_desc}}
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div class="term-info">
+                <h3><span class="number">V</span> Суггестивная функция</h3>
+                <p>
+                    Это слабая бессознательная часть психики. По внушаемой функции человек нуждается в помощи и советах, воспринимает поступающую информацию некритично и с благодарностью, причем охотно верит любой такой информации.
+                </p>
+                <span class="function-name">{{fifth_fn_name}}</span>
+            </div>
+        </div>
+
+        <!-- 6. Активационная функция — бокс СПРАВА, термин СЛЕВА -->
+        <div class="function-row">
+            <div class="function-box">
+                <table>
+                    <tr>
+                        <td>
+                            {{sixth_fn_desc}}
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div class="term-info">
+                <h3><span class="number">VI</span> Активационная функция</h3>
+                <p>
+                    Это область психики которая регулирует поступки человека, чтобы они соответствовали принятым в обществе нормам путем самооценки поведения.
+                    Функция отслеживает как общество оценивает ваши действия.  Если отрицательно, то самооценка понижается, предостерегая от неверных поступков, а если положительно — самооценка повышается и активирует человека на дальнейшие действия.
+                </p>
+                <span class="function-name">{{sixth_fn_name}}</span>
+            </div>
+        </div>
+
+        <!-- 7. Защитная функция — бокс СЛЕВА, термин СПРАВА -->
+        <div class="function-row">
+            <div class="function-box">
+                <table>
+                    <tr>
+                        <td>
+                            {{seventh_fn_desc}}
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div class="term-info">
+                <h3><span class="number">VII</span> Ограничительная функция</h3>
+                <p>
+                    Служит для ограждения личности от неприятного или опасного постороннего влияния. Защитные реакции включаются автоматически, когда возникает чувство угрозы, ограничивая чужую активность. Работает быстро и эффективно.
+                </p>
+                <span class="function-name">{{seventh_fn_name}}</span>
+            </div>
+        </div>
+
+        <!-- 8. Ограничительная функция — бокс СПРАВА, термин СЛЕВА -->
+        <div class="function-row">
+            <div class="function-box">
+                <table>
+                    <tr>
+                        <td>
+                            {{eighth_fn_desc}}
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div class="term-info">
+                <h3><span class="number">VIII</span> Фоновая функция</h3>
+                <p>
+                    Ответственна за правильные мгновенные бессознательные реакции в повседневной жизни. Собственно это и есть наша подсознательная сущность. Она работает непрерывно, отслеживая ситуацию и выталкивает в сознание только то, что требует оперативного реагирования, все остальное делается автоматически.
+                </p>
+                <span class="function-name">{{eighth_fn_name}}</span>
+            </div>
+        </div>
+
+    </div>
+
+</body>
+</html>

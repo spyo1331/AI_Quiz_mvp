@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <style>
+        @keyframes opacityUpperTable {
+            0% {
+            opacity: 0;
+            transform: translateY(10px);
+          }
+          100% {
+            opacity: 1; /* Полностью видимый */
+            transform: translateY(0); /* Возвращается на своё место */
+          }
+        }
+
+        @keyframes opacity {
+            0% {
+            opacity: 0; /* Элемент полностью прозрачный в начале */
+            transform: translateY(20px); /* Смещён вниз на 20px */
+          }
+          100% {
+            opacity: 1; /* Полностью видимый */
+            transform: translateY(0); /* Возвращается на своё место */
+          }
+        }
+
+        body {
+            font-family: FreeMono, monospace;
+            max-width: 500px;
+            height: 100vh;
+            margin: 50px auto;
+            padding: 10px;
+            background:
+                /* Чёрные края по бокам */
+                linear-gradient(90deg,
+                    #000000 0%,
+                    #000000 15%,
+                    transparent 30%,
+                    transparent 70%,
+                    #000000 85%,
+                    #000000 100%
+                ),
+                /* Твои градиенты */
+                radial-gradient(ellipse at top, rgba(153, 51, 255, 0.5) 0%, transparent 50%),
+                radial-gradient(ellipse at bottom, rgba(204, 102, 255, 0.3) 0%, transparent 50%),
+                linear-gradient(180deg, #5C1B83 0%, #1a001a 50%, #5C1B83 100%);
+            background-blend-mode: normal, screen, screen, normal;
+        }
+        button {
+            animation: opacity 0.5s ease-out;
+            font-family: FreeMono, monospace;
+            padding: 12px 35px;
+            background: transparent;
+            color: white;
+            border: 0 solid;
+            outline: 1px solid;
+            outline-color: rgba(255, 255, 255, 0.5);
+            outline-offset: 0px;
+            box-shadow: inset 0 0 20px rgba(255, 255, 255, 0);
+            text-shadow: none;
+            border-radius: 10px;
+            transition: all 1250ms cubic-bezier(0.19, 1, 0.22, 1);
+            cursor: pointer;
+        }
+
+
+        button:hover {
+            border: 1px solid;
+            box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.5);  /* тень видна */
+            outline-color: rgba(255, 255, 255, 0);                /* outline исчезает */
+            outline-offset: 15px;                                  /* outline уходит наружу */
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);          /* тень текста */
+        }
+
+        .answered {
+            animation: opacityUpperTable 0.3s ease-out;
+            background: transparent;
+            border: 1px white solid;
+            box-shadow: inset 0 0 5px rgba(255, 255, 255, 0.5);
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+
+        input[name='answer_place'] {
+            animation: opacity 0.5s ease-out;
+            background: transparent;
+            border: none;
+            border-bottom: 1px solid white;
+            color: white;
+            width: 100%;
+            max-width: 600px;
+            height: 20px;
+            padding: 10px
+        }
+
+
+        input[name='answer_place']:focus{
+        outline:none;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            align-items: center;
+        }
+
+    </style>
+    <meta charset="UTF-8">
+    <title>Тест</title>
+</head>
+<body>
+    {% for ans in answers %}
+    <div class="answered">
+        <b style="color: white; font-family: FreeMono, monospace">{{ loop.index }}. {{ questions[loop.index0] }}</b><br>
+        <hr>
+        <span style="color: white;">Ответ: {{ ans }}</span>
+    </div>
+    {% endfor %}
+
+    {% if not finished %}
+        <div class="current">
+            <div style="color: white; margin-bottom: 10px; font-family: FreeMono, monospace">
+                Вопрос {{ current + 1 }} из {{ total }}
+            </div>
+
+            <h1 style="color: white; font-family: FreeMono, monospace; font-size: 20px">{{ current_question }}</h1>
+
+            <form method="POST">
+                <input style="font-family: FreeMono, monospace" type="text" name="answer_place" placeholder="Введите ответ..." required autofocus>
+                <button type="submit">Отправить</button>
+                {% for ans in answers %}
+                <input type="hidden" name="answers[]" value="{{ ans }}">
+                {% endfor %}
+            </form>
+            {% if current+1 == note_step %}
+            <h3 style="color: white; font-family: FreeMono, monospace">После ответа на вопрос №{{note_step}} подожди 10-15 секунд.</h3>
+            {% endif %}
+            {% if current+1 == (note_step*2) %}
+            <h3 style="color: white; font-family: FreeMono, monospace">После ответа на последний вопрос подожди 20-35 секунд.</h3>
+            {% endif %}
+        </div>
+
+    {% endif %}
+</body>
+</html>
