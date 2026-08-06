@@ -24,7 +24,7 @@ WORKDIR /app
 COPY --from=builder /app /app
 
 ENV PATH="/app/.venv/bin:$PATH"
-
+ENV PORT=8000
 EXPOSE 8000
 
 # Для Flask (не uvicorn!)
