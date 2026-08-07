@@ -1,13 +1,16 @@
 from flask import Blueprint, render_template
 import json
 from flask_app.app_blueprints import state
+import os
 
 quiz_results = Blueprint('quiz_results', __name__)
+
+json_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'text_database', 'descs.json')
 
 @quiz_results.route('/')
 def show_results():
     selected_type = state['final_suggestion']
-    with open('text_database/descs.json', 'r', encoding='utf-8') as file:
+    with open(json_path, 'r', encoding='utf-8') as file:
         type_desc = json.load(file)
 
 
