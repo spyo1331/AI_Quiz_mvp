@@ -106,7 +106,7 @@ def parse_type(state: State):
     system_prompt = """О каком типе личности из 16 идет речь? Твоим ответом будет только valid JSON: {"final_suggestion": "Тип личности (ENFP|INTJ|INFJ|ESTP... или UNKNOWN)"}"""
 
     response = llm.invoke([{'role': 'system', 'content': system_prompt},
-                           {'role': 'user', 'content': test_results}], response_format={"type": "json_object"})
+                           {'role': 'user', 'content': """{}\n{}""".format(test_results, "Чтобы не было ошибок продолжи генерацию ответа начиная ТОЛЬКО с {")}], response_format={"type": "json_object"})
 
     data = json.loads(response.content)
     parsed_response = EndAnalysis(**data)
