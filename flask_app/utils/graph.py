@@ -102,6 +102,7 @@ def end_analysis(state: State):
 
 def parse_type(state: State):
     llm.temperature=0.0
+    llm.max_tokens=15
     test_results = state['explanation']
     system_prompt = """О каком типе личности из 16 идет речь? Твоим ответом будет только valid JSON: {"final_suggestion": "Тип личности (ENFP|INTJ|INFJ|ESTP... или UNKNOWN)"}"""
 
